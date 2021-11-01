@@ -6,24 +6,31 @@
     <title>Chat Room</title>
 </head>
 <body>
-    <textarea id="chat-log" cols="100" rows="20"></textarea><br>
+<!--    <textarea id="chat-log" cols="100" rows="20"></textarea><br>-->
+    <div id="chat-log" style="width:80%; min-height:300px; border:1px solid skyblue; background-color:skyblue"></div>
     <input id="chat-message-input" type="text" size="100"><br>
     <input id="chat-message-submit" type="button" value="Send">
     {{ room_name|json_script:"room-name" }}
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script>
         const roomName = JSON.parse(document.getElementById('room-name').textContent);
 
         const chatSocket = new WebSocket(
             'ws://192.168.45.227:8000'
-<!--            + window.location.host-->
             + '/ws/chat/'
             + roomName
             + '/'
         );
 
         chatSocket.onmessage = function(e) {
+            const id = '{{id}}';
             const data = JSON.parse(e.data);
-            document.querySelector('#chat-log').value += (data.message + '\n');
+            var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+               console.log(isMobile);
+
+            $('#chat-log').append('<div style="margin-bottom: 10px;"><div style="margin-bottom: 5px;">'+id+'</div><span style="background-color:white; padding:2px; border-radius: 20%;">'+data.message+'</span></div>');
+
         };
 
         chatSocket.onclose = function(e) {
